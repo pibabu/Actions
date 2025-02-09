@@ -6,4 +6,6 @@ jobs:
         steps: 
         -   name: checkoit repo code
             uses: actions/checkout@v3 
-        -   run: echo "$(cat hello_world.txt)"
+        -   run: echo "Append current date $(date)" >> hello_world.txt && cat hello_world.txt
+
+        
