@@ -6,7 +6,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: send telegram message on push
+      - name: send telegram message
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
@@ -17,4 +17,4 @@ jobs:
             
             Repository: ${{ github.repository }}
             
-            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}} 
