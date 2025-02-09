@@ -4,13 +4,12 @@ jobs:
     say-hello-job:
         runs-on: ubuntu-latest
         steps: 
-        -   name: checkout repo code
+        -   name: checkoit repo code
             uses: actions/checkout@v3 
+         
         -   run: |
-                new_line="New entry at $(date)"
-                commit_msg="$(git log -1 --pretty=%B)"
-                
-                echo "$new_line" >> hello_world.txt
-                echo "Commit Message: $commit_msg" >> hello_world.txt
-                cat hello_world.txt
-        
+                echo "Append current date $(date)" && cat hello_world.txt
+                echo "Repository: $GITHUB_REPOSITORY"
+                echo "Actor: $GITHUB_ACTOR"
+
+            
