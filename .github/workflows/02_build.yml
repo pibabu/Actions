@@ -1,6 +1,4 @@
 name: build-test
-run-name: ${{ github.actor }} pushed to ${{ github.ref_name }} ":" {{ github.event.commits[0].message }}
-
 on:
   push:
     branches: main
