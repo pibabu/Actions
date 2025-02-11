@@ -1,5 +1,6 @@
 name: build-test
 run-name: ${{ github.actor }} pushed to ${{ github.ref_name }}
+
 on:
   push:
     branches: main
@@ -18,21 +19,18 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: dist #full path: /github/workspace/dist
+          path: dist
 
   test:
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16, 18, 20]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: "18.x"
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -44,7 +42,7 @@ jobs:
   notification:
     needs: test
     runs-on: ubuntu-latest
-    if: always() # schickt notification auch bei failed jobs
+    if: always()
     steps:
       - uses: appleboy/telegram-action@master
         with:
@@ -55,7 +53,5 @@ jobs:
             Commit message: ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
-
             See changes: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
-
             Status: ${{ job.status }}
