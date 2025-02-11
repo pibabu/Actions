@@ -1,5 +1,5 @@
 name: build-test
-run-name: ${{ github.actor }} pushed to ${{ github.ref_name }}  commit/${{ github.sha }}
+run-name: ${{ github.actor }} pushed to ${{ github.ref_name }} ":" {{ github.event.commits[0].message }}
 
 on:
   push:
@@ -38,20 +38,3 @@ jobs:
           path: .next
       - run: npm install
       - run: npm test
-
-  notification:
-    needs: test
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            ${{ github.actor }} created commit:
-            Commit message: ${{ github.event.commits[0].message }}
-
-            Repository: ${{ github.repository }}
-            See changes: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
-            Status: ${{ job.status }}
