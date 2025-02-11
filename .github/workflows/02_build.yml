@@ -1,5 +1,5 @@
 name: build-test
-run-name: ${{ github.actor }} pushed to ${{ github.ref_name }}
+run-name: ${{ github.actor }} pushed to ${{ github.ref_name }}  commit/${{ github.sha }}
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: dist
+          path: .next
 
   test:
     needs: build
@@ -35,7 +35,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: dist
+          path: .next
       - run: npm install
       - run: npm test
 
