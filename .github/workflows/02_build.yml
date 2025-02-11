@@ -1,14 +1,61 @@
 name: build-test
-on: push
-jobs: 
+run-name: ${{ github.actor }} pushed to ${{ github.ref_name }}
+on:
+  push:
+    branches: main
+
+jobs:
   build:
     runs-on: ubuntu-latest
-    steps: 
-      - name: checkout repo
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+      - run: npm install
+      - run: npm run build
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist #full path: /github/workspace/dist
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]
+    steps:
+      - name: Checkout repo
         uses: actions/checkout@v3
-      - name: use node.js
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: ${{ matrix.node-version }}
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist
       - run: npm install
-      - run: npm run build 
+      - run: npm test
+
+  notification:
+    needs: test
+    runs-on: ubuntu-latest
+    if: always() # schickt notification auch bei failed jobs
+    steps:
+      - uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{ github.actor }} created commit:
+            Commit message: ${{ github.event.commits[0].message }}
+
+            Repository: ${{ github.repository }}
+
+            See changes: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+
+            Status: ${{ job.status }}
